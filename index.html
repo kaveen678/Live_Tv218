@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Stream Pro | Kaveen Chamodya</title>
+    
+    <link href="https://vjs.zencdn.net/7.20.3/video-js.css" rel="stylesheet" />
+    <link href="https://unpkg.com/@videojs/themes@1.0.1/city/index.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #00f2fe;
+            --secondary-color: #4facfe;
+            --bg-dark: #080a0f;
+            --card-bg: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            background: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        #loader {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: var(--bg-dark);
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+            z-index: 9999;
+        }
+        .spinner {
+            width: 60px; height: 60px;
+            border: 5px solid rgba(0, 242, 254, 0.1);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s infinite;
+            box-shadow: 0 0 20px var(--primary-color);
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        .main-wrapper {
+            width: 95%;
+            max-width: 1100px;
+            display: none; 
+            flex-direction: column;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .player-section {
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            padding: 15px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .video-js {
+            width: 100%;
+            height: 480px;
+            border-radius: 12px;
+        }
+
+        .channel-container {
+            max-height: 500px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+
+        h3 {
+            font-size: 14px;
+            color: var(--primary-color);
+            margin: 25px 0 12px 0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+        }
+
+        .channel-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 12px;
+        }
+
+        .channel-card {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 15px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 11px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 50px;
+        }
+
+        .channel-card:hover, .channel-card.active {
+            background: linear-gradient(45deg, var(--secondary-color), var(--primary-color));
+            color: #000;
+            font-weight: 700;
+            box-shadow: 0 0 15px var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .channel-container::-webkit-scrollbar { width: 5px; }
+        .channel-container::-webkit-scrollbar-thumb { background: var(--primary-color); border-radius: 10px; }
+
+        .footer-note {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.3);
+            padding-bottom: 20px;
+        }
+        .dev-name span { color: var(--primary-color); font-weight: 600; }
+
+        @media (max-width: 768px) { .video-js { height: 260px; } }
+    </style>
+</head>
+<body>
+
+    <div id="loader">
+        <div class="spinner"></div>
+        <div class="loading-text" id="status-text" style="margin-top: 20px; color: var(--primary-color);">Initializing HD Stream...</div>
+    </div>
+
+    <div class="main-wrapper" id="player-ui">
+        <div class="player-section">
+            <video id="my-video" class="video-js vjs-theme-city vjs-big-play-centered" controls preload="auto">
+                <p class="vjs-no-js">JavaScript required.</p>
+            </video>
+        </div>
+
+        <div class="channel-container">
+            <h3>Featured Channels</h3>
+            <div class="channel-grid" id="fixed-channels">
+                <div class="channel-card active" onclick="playChannel(this, 'https://tvsen6.aynaott.com/ColorsHD/index.m3u8')">Colors HD</div>
+                <div class="channel-card" onclick="playChannel(this, 'https://tvsen6.aynaott.com/ColorsBangla/index.m3u8')">Colors Bangla</div>
+                <div class="channel-card" onclick="playChannel(this, 'https://imranapk.site/TG@RANAPKX73x/TOXF/play.php?id=ten_cricket')">Ten Cricket</div>
+                <div class="channel-card" onclick="playChannel(this, 'https://tvsen5.aynaott.com/PtvSports/index.m3u8')">Ptv Sports</div>
+                <div class="channel-card" onclick="playChannel(this, 'https://tvsen5.aynaott.com/willowhd/index.m3u8')">Willow Cricket HD</div>
+                <div class="channel-card" onclick="playChannel(this, 'https://tvsen5.aynaott.com/cXPB2LKkErN9/index.m3u8')">Star Sport 2 HD</div>
+                <div class="channel-card" onclick="playChannel(this, 'https://tvsen7.aynaott.com/ssps2hd/index.m3u8')">Star Sport Select 2 HD</div>
+                <div class="channel-card" onclick="playChannel(this, 'https://tvsen6.aynaott.com/asports/index.m3u8')">A Sports</div>
+                <div class="channel-card" onclick="playChannel(this, 'https://tvsen7.aynaott.com/tsportshd/index.m3u8')">T Sports HD</div>
+                <div class="channel-card" onclick="playChannel(this, 'https://tplay.live/playlist/kids/motu-patlu/index.m3u8')">Motu Patlu</div>
+            </div>
+        </div>
+
+        <footer class="footer-note">
+            <p>&copy; 2025 All Rights Reserved</p>
+            <p class="dev-name">Powered By <span>Kaveen Chamodya</span></p>
+        </footer>
+    </div>
+
+    <script src="https://vjs.zencdn.net/7.20.3/video.min.js"></script>
+    <script>
+        var player = videojs('my-video', { fluid: true });
+
+        function playChannel(element, url) {
+            document.querySelectorAll('.channel-card').forEach(c => c.classList.remove('active'));
+            element.classList.add('active');
+            
+            // Checking if URL is PHP or M3U8
+            let type = url.includes('.m3u8') ? 'application/x-mpegURL' : 'video/mp4';
+            
+            player.src({ src: url, type: type });
+            player.play();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.onload = function() {
+            // Initial default channel
+            player.src({ src: 'https://tvsen6.aynaott.com/ColorsHD/index.m3u8', type: 'application/x-mpegURL' });
+            
+            // Simple Loader logic
+            setTimeout(() => {
+                document.getElementById('status-text').innerText = "System Ready !!";
+                setTimeout(() => {
+                    document.getElementById('loader').style.display = 'none';
+                    document.getElementById('player-ui').style.display = 'flex';
+                }, 800);
+            }, 1000);
+        };
+    </script>
+</body>
+</html>
